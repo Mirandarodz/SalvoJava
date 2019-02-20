@@ -1,14 +1,10 @@
 package com.codeoftheweb.salvo;
 
 import org.hibernate.annotations.GenericGenerator;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
+
 
 @Entity
 
@@ -17,7 +13,6 @@ public class GamePlayer {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
-
     private Date joinDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -28,15 +23,20 @@ public class GamePlayer {
     @JoinColumn(name="game_id")
     private Game game;
 
+    @OneToMany(mappedBy="gamePlayer", fetch=FetchType.EAGER)
+    private List<Ship> ships;
+
+    @OneToMany(mappedBy = "gamePlayer")
+    //van en plural salvoes y ships, por los datos que se sacan de la lista...luego se definen sus respectivos get y set
+    private List<Salvo> salvoes;
+
     public GamePlayer() { }
 
-    public long getId() {
-        return id;
-    }
+    public long getId() { return id; }
 
     public GamePlayer(Game game, Player player) {
-        this.game = game;
-        this.player = player;
+        this.setGame(game);
+        this.setPlayer(player);
     }
 
     public Game getGame() {
@@ -55,4 +55,30 @@ public class GamePlayer {
         this.player = player;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+    public List<Ship> getShips() {
+        return ships;
+    }
+
+    public void setShips(List<Ship> ships) {
+        this.ships = ships;
+    }
+
+    public void setSalvoes(List<Salvo> salvoes) {
+        this.salvoes = salvoes;
+    }
+
+    public Date getJoinDate() {
+        return joinDate;
+    }
+
+    public void setJoinDate(Date joinDate) {
+        this.joinDate = joinDate;
+    }
+
+    public List<Salvo> getSalvoes() {
+        return salvoes;
+    }
 }

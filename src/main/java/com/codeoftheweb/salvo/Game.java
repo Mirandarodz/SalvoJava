@@ -3,11 +3,8 @@ package com.codeoftheweb.salvo;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 public class Game {
@@ -20,42 +17,44 @@ public class Game {
     @OneToMany(mappedBy = "game", fetch = FetchType.EAGER)
     private List<GamePlayer> gamePlayers;
 
+    @OneToMany (mappedBy = "game", fetch = FetchType.EAGER)
+    private List<Score> scores;
 
-    public Game() {
-        setCreationDate(new Date());
+    public Game() {}
+
+    public Game(Date creationDate) {
+        this.creationDate = creationDate ;
     }
 
-    public long getId () {
+    public long getId() {
         return id;
-    }
-
-    public Date getCreationDate () {
-        return creationDate;
-    }
-
-    public void setCreationDate (Date creationDate){
-        this.creationDate = creationDate;
-    }
-    public String toString () {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        return dateFormat.format(getCreationDate());
-    }
-
-
-    public List<GamePlayer> getGamePlayers () {
-        return gamePlayers;
-    }
-
-    public void addGamePlayers (GamePlayer gamePlayer){
-        gamePlayer.setGame(this);
-        this.getGamePlayers().add(gamePlayer);
     }
 
     public void setId(long id) {
         this.id = id;
     }
 
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public List<GamePlayer> getGamePlayers() {
+        return gamePlayers;
+    }
+
     public void setGamePlayers(List<GamePlayer> gamePlayers) {
         this.gamePlayers = gamePlayers;
+    }
+
+    public List<Score> getScores() {
+        return scores;
+    }
+
+    public void setScores(List<Score> scores) {
+        this.scores = scores;
     }
 }
