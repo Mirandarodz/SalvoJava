@@ -3,12 +3,12 @@ package com.codeoftheweb.salvo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -197,5 +197,21 @@ public class SalvoController {
         dto.put("tied", player.getDraws(player.getScores()));
 
         return dto;
+    }
+
+
+    @RequestMapping(path = "/players", method = RequestMethod.POST)
+    public ResponseEntity<String> createUser(@RequestParam String userName, @RequestParam String password) {
+        if (userName.isEmpty()) {
+            return new ResponseEntity<>("No name given", HttpStatus.FORBIDDEN);
+        }
+
+        Player player = playerRepository.findByUserName(userName);
+        if (player != null) {
+            return new ResponseEntity<>("Name already used", HttpStatus.CONFLICT);
+        }
+
+        playerRepository.save(new Player(userName, passwordEncoder.encode(password)));
+        return new ResponseEntity<>("Player "+userName+" added", HttpStatus.CREATED);
     }
 }
