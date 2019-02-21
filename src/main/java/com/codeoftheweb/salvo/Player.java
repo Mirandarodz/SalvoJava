@@ -29,9 +29,9 @@ public class Player {
     public Player() {
     }
 
-    public Player(String userName, String password) {
-        this.userName   =   userName;
-        this.password   =   password;
+    public Player(String userName, String password)
+    { this.userName   =   userName;
+        this.password = password;
     }
 
     public float getScore (Player player){
@@ -94,6 +94,7 @@ public class Player {
     public void setGamePlayers(Set<GamePlayer> gamePlayers) {
         this.gamePlayers = gamePlayers;
     }
+
 
     public String getPassword() {
         return password;
