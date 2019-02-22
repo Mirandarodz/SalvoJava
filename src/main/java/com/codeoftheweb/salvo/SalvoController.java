@@ -183,7 +183,7 @@ public class SalvoController {
         return dto;
     }
 
-
+    //Para crear usuarios
     @RequestMapping(path = "/players", method = RequestMethod.POST)
     public ResponseEntity<String> createUser(@RequestParam String userName, @RequestParam String password) {
         if (userName.isEmpty()) {
@@ -198,17 +198,20 @@ public class SalvoController {
         playerRepository.save(new Player(userName, passwordEncoder.encode(password)));
         return new ResponseEntity<>("Player "+userName+" added", HttpStatus.CREATED);
     }
+
+    //restringir las vistas
     @RequestMapping("/game_view/{gpid}")
     public ResponseEntity<Object> cheat(@PathVariable long gpid, Authentication authentication) {
-        Player player = getLoggedPlayer(authentication);
+        Player player = playerAuthentication (authentication);
         GamePlayer gamePlayer = gamePlayerRepository.findById(gpid).orElse(null);
-        if (gamePlayer == null) {
+        if (player == null) {
             return new ResponseEntity<>(makeMap("error", "Forbidden"), HttpStatus.FORBIDDEN);
         }
 
         if (player.getId() != gamePlayer.getPlayer().getId()) {
             return new ResponseEntity<>(makeMap("error", "Unauthorized"), HttpStatus.UNAUTHORIZED);
         }
+
 
         //return gameViewDTO(gamePlayerRepository.findById(gpid).get());
 
@@ -226,9 +229,17 @@ public class SalvoController {
     private Player getLoggedPlayer(Authentication authentication){
         return playerRepository.findByUserName(authentication.getName());
     }
+
     private Map<String, Object> makeMap(String key, String value){
         Map<String, Object> map = new LinkedHashMap<>();
         map.put(key, value);
         return map;
+    }
+    public Player playerAuthentication(Authentication authentication) {
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        } else {
+            return playerRepository.findByUserName(authentication.getName());
+        }
     }
 }
