@@ -9,7 +9,10 @@ var salvoJSON;
 var salvoPositions = [];
 var waitState = false;
 
+
 refreshGameView(makeUrl());
+
+postShipLocations(makePostUrl);
 
 $('#logoutButton').on('click', function (event) {
     event.preventDefault();
@@ -45,6 +48,7 @@ function makeUrl() {
 
 function makePostUrl() {
     var gamePlayerID =  getParameterByName("gp");
+    console.log(gamePlayerID);
     return '/api/games/players/' + gamePlayerID + '/ships';
 }
 
@@ -288,10 +292,12 @@ function createTable(player) {
     mytable.appendTo(gridId);
 }
 
-function postShipLocations (postUrl) {
+function postShipLocations(postUrl) {
+    console.log(postUrl);
     $.post({
         url: postUrl,
-        data: shipsJSON,
+        //data: shipsJSON,
+        data: JSON.stringify([{shipType: "destroyer", locations: ["A1", "A2", "A3"]},{type: "destroyer", locations: ["A1", "A2", "A3"]}]),
         dataType: "text",
         contentType: "application/json"
     })

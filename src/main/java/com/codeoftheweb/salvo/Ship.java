@@ -11,11 +11,12 @@ public class Ship{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private String shipType;
 
     @ElementCollection
     @Column(name = "shipLocation")
-    private List<String> shipLocation;
+    private List<String> locations;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "gamePlayer_id")
@@ -26,7 +27,7 @@ public class Ship{
 
     public Ship(String shipType, List<String> shipLocation, GamePlayer gamePlayer) {
         this.setShipType(shipType);
-        this.setShipLocation(shipLocation);
+        this.setLocations(shipLocation);
         this.setGamePlayer(gamePlayer);
     }
 
@@ -38,12 +39,12 @@ public class Ship{
         this.id = id;
     }
 
-    public List<String> getShipLocation() {
-        return shipLocation;
+    public List<String> getLocations() {
+        return locations;
     }
 
-    public void setShipLocation(List<String> shipLocation) {
-        this.shipLocation = shipLocation;
+    public void setLocations(List<String> locations) {
+        this.locations = locations;
     }
 
     public GamePlayer getGamePlayer() {

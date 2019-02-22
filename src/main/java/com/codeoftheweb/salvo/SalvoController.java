@@ -1,8 +1,6 @@
 package com.codeoftheweb.salvo;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -10,7 +8,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import  java.util.stream.Collectors;
@@ -33,6 +30,9 @@ public class SalvoController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ShipRepository shipRepository;
 
 
     public List<Map<String, Object>> getAllGames() {
@@ -116,7 +116,7 @@ public class SalvoController {
     private Map<String, Object> shipDTO(Ship ship) {
         Map<String, Object> dto = new LinkedHashMap<>();
         dto.put("shipType", ship.getShipType());
-        dto.put("shipLocation", ship.getShipLocation());
+        dto.put("shipLocation", ship.getLocations());
         dto.put("player", ship.getGamePlayer().getPlayer().getId());
         return dto;
     }
@@ -253,7 +253,7 @@ public class SalvoController {
     }
     }
 
-
+ // para entrar en el juego
     @RequestMapping(path = "/game/{nn}/players", method = RequestMethod.POST)
     public ResponseEntity<Object> joinGame(@PathVariable Long nn,Authentication authentication) {
         Map<String, Object> response = new LinkedHashMap<String, Object>();
@@ -278,5 +278,23 @@ public class SalvoController {
             }
         }
 
+    }
+
+    @RequestMapping(path =  "/games/players/{gamePlayerId/ships}", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> addShips(@PathVariable long gamePlayerId, @RequestBody Set<Ship> Ships, Authentication authentication, Ship[] ships) {
+        Player player = playerAuthentication(authentication);
+        GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerId).orElse(null);
+
+        if (gamePlayer == null) {return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);}
+
+        if (player.getId() != gamePlayer.getPlayer().getId()) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        if (gamePlayer.getShips().size()>=5) return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        for (Ship ship : ships){
+            ship.setGamePlayer(gamePlayer);
+            shipRepository.save(ship);
+        }
+        return new ResponseEntity<>(makeMap("OK", "Ships placed!"), HttpStatus.OK);
     }
 }

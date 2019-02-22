@@ -116,6 +116,7 @@ $('#createGame').on('submit', function (event) {
             setTimeout(
                 function()
                 {
+                    console.log(gameViewUrl);
                     location.href = gameViewUrl;
                 }, 3000);
         })
