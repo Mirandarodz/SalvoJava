@@ -11,10 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import  java.util.stream.Collectors;
 
 @RestController
@@ -23,6 +21,9 @@ public class SalvoController {
 
     @Autowired
     private GameRepository game;
+
+    @Autowired
+    private GameRepository gameRepository;
 
     @Autowired
     private GamePlayerRepository gamePlayerRepository;
@@ -226,10 +227,6 @@ public class SalvoController {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    private Player getLoggedPlayer(Authentication authentication){
-        return playerRepository.findByUserName(authentication.getName());
-    }
-
     private Map<String, Object> makeMap(String key, String value){
         Map<String, Object> map = new LinkedHashMap<>();
         map.put(key, value);
@@ -241,5 +238,45 @@ public class SalvoController {
         } else {
             return playerRepository.findByUserName(authentication.getName());
         }
+    }
+    @RequestMapping(path = "/games", method = RequestMethod.POST)
+    public ResponseEntity<Object> newGame(Authentication authentication) {
+        Map<String, Object> response = new LinkedHashMap<String, Object>();
+        Player player = playerAuthentication(authentication);
+        if (player == null){
+            return new ResponseEntity<>(makeMap("error", "Forbidden"), HttpStatus.FORBIDDEN); }
+        else {
+        Game game=gameRepository.save(new Game(new Date()));
+        GamePlayer gamePlayer=gamePlayerRepository.save(new GamePlayer());
+        response.put("gpid",gamePlayer.getId());
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
+    }
+    }
+
+
+    @RequestMapping(path = "/game/{nn}/players", method = RequestMethod.POST)
+    public ResponseEntity<Object> joinGame(@PathVariable Long nn,Authentication authentication) {
+        Map<String, Object> response = new LinkedHashMap<String, Object>();
+        Player player = playerAuthentication(authentication);
+        if (player == null){
+            response.put("error","no autenticado");
+            return new ResponseEntity<>(response,HttpStatus.FORBIDDEN);
+        }else{
+            Game game=gameRepository.getOne(nn);
+            if(game!=null){
+                if(game.getGamePlayers().size()<2){
+                    GamePlayer gamePlayer=gamePlayerRepository.save(new GamePlayer());
+                    response.put("gpid",gamePlayer.getId());
+                    return new ResponseEntity<>(response,HttpStatus.CREATED);
+                }else{
+                    response.put("error","game is full");
+                    return new ResponseEntity<>(response,HttpStatus.FORBIDDEN);
+                }
+            }else{
+                response.put("error","no such game");
+                return new ResponseEntity<>(response,HttpStatus.FORBIDDEN);
+            }
+        }
+
     }
 }
