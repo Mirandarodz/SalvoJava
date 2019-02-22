@@ -247,7 +247,7 @@ public class SalvoController {
             return new ResponseEntity<>(makeMap("error", "Forbidden"), HttpStatus.FORBIDDEN); }
         else {
         Game game=gameRepository.save(new Game(new Date()));
-        GamePlayer gamePlayer=gamePlayerRepository.save(new GamePlayer());
+        GamePlayer gamePlayer=gamePlayerRepository.save(new GamePlayer(game,player));
         response.put("gpid",gamePlayer.getId());
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
@@ -265,7 +265,7 @@ public class SalvoController {
             Game game=gameRepository.getOne(nn);
             if(game!=null){
                 if(game.getGamePlayers().size()<2){
-                    GamePlayer gamePlayer=gamePlayerRepository.save(new GamePlayer());
+                    GamePlayer gamePlayer=gamePlayerRepository.save(new GamePlayer(game, player));
                     response.put("gpid",gamePlayer.getId());
                     return new ResponseEntity<>(response,HttpStatus.CREATED);
                 }else{
