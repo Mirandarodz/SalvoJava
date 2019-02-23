@@ -280,8 +280,8 @@ public class SalvoController {
 
     }
 
-    @RequestMapping(path =  "/games/players/{gamePlayerId/ships}", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> addShips(@PathVariable long gamePlayerId, @RequestBody Set<Ship> Ships, Authentication authentication, Ship[] ships) {
+    @RequestMapping(path =  "/games/players/{gamePlayerId}/ships", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> addShips(@PathVariable long gamePlayerId, @RequestBody Set<Ship> ships, Authentication authentication) {
         Player player = playerAuthentication(authentication);
         GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerId).orElse(null);
 
@@ -295,6 +295,6 @@ public class SalvoController {
             ship.setGamePlayer(gamePlayer);
             shipRepository.save(ship);
         }
-        return new ResponseEntity<>(makeMap("OK", "Ships placed!"), HttpStatus.OK);
+        return new ResponseEntity<>(makeMap("OK", "Ships placed! :D "), HttpStatus.OK);
     }
 }

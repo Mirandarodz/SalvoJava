@@ -12,7 +12,7 @@ var waitState = false;
 
 refreshGameView(makeUrl());
 
-postShipLocations(makePostUrl);
+postShipLocations(makePostUrl());
 
 $('#logoutButton').on('click', function (event) {
     event.preventDefault();
