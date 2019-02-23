@@ -34,6 +34,9 @@ public class SalvoController {
     @Autowired
     private ShipRepository shipRepository;
 
+    @Autowired
+    private SalvoRepository salvoRepository;
+
 
     public List<Map<String, Object>> getAllGames() {
         return game
@@ -233,6 +236,7 @@ public class SalvoController {
         return map;
     }
     public Player playerAuthentication(Authentication authentication) {
+        //En Java || es un O (OR)
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
             return null;
         } else {
@@ -296,5 +300,23 @@ public class SalvoController {
             shipRepository.save(ship);
         }
         return new ResponseEntity<>(makeMap("OK", "Ships placed! :D "), HttpStatus.OK);
+    }
+    @RequestMapping(path =  "/games/players/{gamePlayerId}/salvoes", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> addSalvoes(@PathVariable long gamePlayerId, @RequestBody Salvo salvo, Authentication authentication) {
+        Player player = playerAuthentication(authentication);
+        GamePlayer gamePlayer = gamePlayerRepository.findById(gamePlayerId).orElse(null);
+
+        if (gamePlayer == null) {return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);}
+
+        if (player == null) {return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);}
+
+        if (player.getId() != gamePlayer.getPlayer().getId()) {return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);}
+
+        if (gamePlayer.isTurnLoaded(salvo.getTurn())) {return new ResponseEntity<>(HttpStatus.FORBIDDEN);}
+
+        salvoRepository.save(salvo);
+
+        return new ResponseEntity<>(makeMap("OK", "Salvo placed! :D "), HttpStatus.CREATED);
+
     }
 }

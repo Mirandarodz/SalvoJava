@@ -58,6 +58,7 @@ public class GamePlayer {
     public void setId(long id) {
         this.id = id;
     }
+
     public List<Ship> getShips() {
         return ships;
     }
@@ -80,5 +81,10 @@ public class GamePlayer {
 
     public List<Salvo> getSalvoes() {
         return salvoes;
+    }
+
+    public boolean isTurnLoaded (int turn) {
+        Salvo salvo = this.getSalvoes().stream().filter(s -> s.getTurn()==turn).findFirst().orElse(null);
+        return salvo != null;
     }
 }
