@@ -206,7 +206,7 @@ public class SalvoController {
     //restringir las vistas
     @RequestMapping("/game_view/{gpid}")
     public ResponseEntity<Object> cheat(@PathVariable long gpid, Authentication authentication) {
-        Player player = playerAuthentication (authentication);
+        Player player = playerAuthentication(authentication);
         GamePlayer gamePlayer = gamePlayerRepository.findById(gpid).orElse(null);
         if (player == null) {
             return new ResponseEntity<>(makeMap("error", "Forbidden"), HttpStatus.FORBIDDEN);
@@ -216,18 +216,58 @@ public class SalvoController {
             return new ResponseEntity<>(makeMap("error", "Unauthorized"), HttpStatus.UNAUTHORIZED);
         }
 
+        return gameViewDTO(gamePlayerRepository.findById(gpid).get());
+    }
 
-        //return gameViewDTO(gamePlayerRepository.findById(gpid).get());
-
-        //private Map<String, Object> gameViewDTO(GamePlayer gamePlayer){
+    private ResponseEntity<Object> gameViewDTO(GamePlayer gamePlayer){
         Map<String, Object> dto = new LinkedHashMap<>();
         dto.put("id", gamePlayer.getGame().getId());
         dto.put("creationDate", gamePlayer.getGame().getCreationDate().getTime());
         dto.put("gamePlayers", getGamePlayersList(gamePlayer.getGame().getGamePlayers()));
         dto.put("ships", getShipList(gamePlayer.getShips()));
         dto.put("salvoes", getSalvoList(gamePlayer.getGame()));
-        //return dto;
+        dto.put("hits",getHitsList(gamePlayer) );
+
         return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    private  Map<String, Object> getHitsList (GamePlayer gamePlayer){
+        Map<String, Object> dto = new LinkedHashMap<>();
+        GamePlayer self = gamePlayer;
+        GamePlayer opponent = gamePlayer.getGame().getGamePlayers().stream().filter(gp -> gp.getId() != gamePlayer.getId()).findFirst().orElse(null);
+        dto.put("self", getHitsData(self, opponent));
+        dto.put("opponent", getHitsData(opponent, self));
+
+        return dto;
+    }
+
+    private List<Map<String, Object>> getHitsData (GamePlayer self, GamePlayer opponent){
+        return self.getSalvoes()
+            .stream()
+            .map(salvo -> hitDTO(salvo, opponent.getShips()))
+            .collect(Collectors.toList());
+    }
+
+    private Map<String, Object> hitDTO(Salvo salvo, List<Ship> ships) {
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("turn", salvo.getTurn());
+        dto.put("missed", countMissed(salvo, ships);
+        dto.put("damages", salvo.getSalvoLocations());
+        return dto;
+    }
+
+    private int countMissed(Salvo salvo, List<Ship> ships){
+        int counter = 0;
+        for (int i = 0; i < ships.size(); ++i){
+            for (int e = 0; e < ships.get(i).getLocations().size(); ++e){
+                for (int a =  0; a < salvo.getSalvoLocations().size(); ++a){
+                    if (salvo.getSalvoLocations().get(a) == ships.get(i).getLocations().get(e)){
+                        ++counter;
+                    }
+                }
+            }
+        }
+        return counter;
     }
 
     private Map<String, Object> makeMap(String key, String value){
@@ -318,5 +358,8 @@ public class SalvoController {
 
         return new ResponseEntity<>(makeMap("OK", "Salvo placed! :D "), HttpStatus.CREATED);
 
+    }
+
+    private class Hit {
     }
 }
