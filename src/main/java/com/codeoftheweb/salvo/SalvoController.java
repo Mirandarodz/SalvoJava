@@ -37,6 +37,9 @@ public class SalvoController {
     @Autowired
     private SalvoRepository salvoRepository;
 
+    @Autowired
+    private ScoreRepository scoreRepository;
+
 
     public List<Map<String, Object>> getAllGames() {
         return game
@@ -229,6 +232,7 @@ public class SalvoController {
         dto.put("ships", getShipList(gamePlayer.getShips()));
         dto.put("salvoes", getSalvoList(gamePlayer.getGame()));
         dto.put("hits", makeHitsDTO(self, opponent));
+        dto.put("gameState", getGameState(self, opponent));
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
@@ -240,7 +244,7 @@ public class SalvoController {
 
         return dto;
     }
-    private List<Map> getHits(GamePlayer gamePlayer, GamePlayer opponentGameplayer) { //le paso dos gameplayers
+    private List<Map> getHits(GamePlayer gamePlayer, GamePlayer opponentGamePlayer) { //le paso dos gameplayers
         List<Map> hits = new ArrayList<>();
         Integer carrierDamage = 0;
         Integer battleshipDamage = 0;
@@ -271,7 +275,7 @@ public class SalvoController {
                     break;
             }
         });
-        for (Salvo salvo : opponentGameplayer.getSalvoes()) {  //obtener los salvos del oponente
+        for (Salvo salvo : opponentGamePlayer.getSalvoes()) {  //obtener los salvos del oponente
             Integer carrierHitsInTurn = 0;
             Integer battleshipHitsInTurn = 0;
             Integer submarineHitsInTurn = 0;
@@ -333,36 +337,6 @@ public class SalvoController {
         }
         return hits;
     }
-
-
-    /*private List<Map<String, Object>> getHitsData (GamePlayer self, GamePlayer opponent){
-        return self.getSalvoes()
-            .stream()
-            .map(salvo -> hitDTO(salvo, opponent.getShips()))
-            .collect(Collectors.toList());
-    }
-
-    private Map<String, Object> hitDTO(Salvo salvo, List<Ship> ships) {
-        Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("turn", salvo.getTurn());
-        dto.put("missed", countMissed(salvo, ships));
-        dto.put("damages", salvo.getSalvoLocations());
-        return dto;
-    }
-
-   /* private int countMissed(Salvo salvo, List<Ship> ships){
-        int counter = 0;
-        for (int i = 0; i < ships.size(); ++i){
-            for (int e = 0; e < ships.get(i).getLocations().size(); ++e){
-                for (int a =  0; a < salvo.getSalvoLocations().size(); ++a){
-                    if (salvo.getSalvoLocations().get(a) == ships.get(i).getLocations().get(e)){
-                        ++counter;
-                    }
-                }
-            }
-        }
-        return counter;
-    }*/
 
     private Map<String, Object> makeMap(String key, String value){
         Map<String, Object> map = new LinkedHashMap<>();
@@ -456,7 +430,131 @@ public class SalvoController {
 
         return new ResponseEntity<>(makeMap("OK", "Salvo placed! :D "), HttpStatus.CREATED);
     }
+    private String getGameState(GamePlayer selfGP, GamePlayer opponentGP) {
+        List<Ship> selfShips = selfGP.getShips();
+        List<Salvo> selfSalvoes = selfGP.getSalvoes();
+        if (selfShips.size() == 0){
+            return "PLACESHIPS";
+        }
+        if (opponentGP.getShips() == null){
+            return "WAITINGFOROPP";
+        }
+        int turn = getCurrentTurn(selfGP, opponentGP);
+        List<Ship> opponentShips = opponentGP.getShips();
+        List<Salvo> opponentSalvoes = opponentGP.getSalvoes();
+        if (opponentShips.size() == 0){
+            return "WAIT";
+        }
+        if(selfSalvoes.size() == opponentSalvoes.size()){
+            Player self = selfGP.getPlayer();
+            Game game = selfGP.getGame();
+            if (allPlayerShipsSunk(selfShips, opponentSalvoes) && allPlayerShipsSunk(opponentShips, selfSalvoes)){
+                Score score = new Score(new Date(),self, game, 0.5f);
+                if(!existScore(score, game)) {
+                    scoreRepository.save(score);
+                }
+                return "TIE";
+            }
+            if (allPlayerShipsSunk(selfShips, opponentSalvoes)){
+                Score score = new Score(new Date(), self, game, 0 );
+                if(!existScore(score, game)) {
+                    scoreRepository.save(score);
+                }
+                return "LOST";
+            }
+            if(allPlayerShipsSunk(opponentShips, selfSalvoes)){
+                Score score = new Score(new Date(), self, game, 1);
+                if(!existScore(score, game)) {
+                    scoreRepository.save(score);
+                }
+                return "WON";
+            }
+        }
+        if (selfSalvoes.size() != turn){
+            return "PLAY";
+        }
+        return "WAIT";
+    }
+    private int getCurrentTurn(GamePlayer selfGP, GamePlayer opponentGP){
+        int selfGPSalvoes = selfGP.getSalvoes().size();
+        int opponentGPSalvoes = opponentGP.getSalvoes().size();
 
-    private class Hit {
+        int totalSalvoes = selfGPSalvoes + opponentGPSalvoes;
+
+        if(totalSalvoes % 2 == 0)
+            return totalSalvoes / 2 + 1;
+
+        return (int) (totalSalvoes / 2.0 + 0.5);
+    }
+    private boolean allPlayerShipsSunk(List<Ship> selfShips, List<Salvo> opponentSalvoes){
+        List<String> carrierLocations = new ArrayList<>();
+        List<String> battleshipLocations = new ArrayList<>();
+        List<String> patrolboatLocations = new ArrayList<>();
+        List<String> submarineLocations = new ArrayList<>();
+        List<String> destroyerLocations = new ArrayList<>();
+        int carrierDamage = 0;
+        int battleshipDamage = 0;
+        int patrolboatDamage = 0;
+        int submarineDamage = 0;
+        int destroyerDamage = 0;
+        for(Ship ship : selfShips){
+            if(ship.getShipType().equals("carrier")){
+                carrierLocations.addAll(ship.getLocations());
+            }else if(ship.getShipType().equals("battleship")){
+                battleshipLocations.addAll(ship.getLocations());
+            }else if(ship.getShipType().equals("patrolboat")){
+                patrolboatLocations.addAll(ship.getLocations());
+            }else if(ship.getShipType().equals("submarine")){
+                submarineLocations.addAll(ship.getLocations());
+            }else if(ship.getShipType().equals("destroyer")){
+                destroyerLocations.addAll(ship.getLocations());
+            }
+        }
+        List<String> salvoesLocations = new ArrayList<>();
+        for(Salvo salvo : opponentSalvoes){
+            salvoesLocations.addAll(salvo.getSalvoLocations());
+        }
+        for(String salvoLocation : salvoesLocations){
+            if(existLocation(salvoLocation, carrierLocations)){
+                carrierDamage++;
+            }else if(existLocation(salvoLocation, battleshipLocations)) {
+                battleshipDamage++;
+            }else if(existLocation(salvoLocation, patrolboatLocations)){
+                patrolboatDamage++;
+            }else if(existLocation(salvoLocation, submarineLocations)){
+                submarineDamage++;
+            }else if(existLocation(salvoLocation, destroyerLocations)){
+                destroyerDamage++;
+            }
+        }
+        if(carrierDamage == 5 && battleshipDamage == 4 && destroyerDamage == 3 && submarineDamage == 3 && patrolboatDamage == 2){
+            return true;
+        }
+        return false;
+    }
+    private boolean existLocation(String location, List<String> locations){
+        for(String _location : locations){
+            if(location.equals(_location)){
+                return true;
+            }
+        }
+        return false;
+    }
+    private boolean existSalvo(Salvo salvo, Set<Salvo> salvoes){
+        for(Salvo s : salvoes){
+            if(salvo.getTurn() == s.getTurn()){
+                return true;
+            }
+        }
+        return false;
+    }
+    private boolean existScore(Score score, Game game){
+        List<Score> scores = game.getScores();
+        for(Score s : scores){
+            if(score.getPlayer().getUserName().equals(s.getPlayer().getUserName())){
+                return true;
+            }
+        }
+        return false;
     }
 }
