@@ -12,9 +12,9 @@ var waitState = false;
 
 refreshGameView(makeUrl());
 
-postShipLocations(makePostUrl());
+//postShipLocations(makePostUrl());
 
-postSalvo(makePostUrlSalvoes());
+//postSalvo(makePostUrlSalvoes());
 
 $('#logoutButton').on('click', function (event) {
     event.preventDefault();
@@ -194,18 +194,17 @@ function showSelf (gamePlayerData) {
     $('#currentPlayerName').text(you);
     $('#OpponentPlayerName').text(viewer);
 
-
     gamePlayerData.ships.forEach(function(ship) {
 
         let firstCellID;
-        firstCellID = "#p1_" + ship.locations[0];
-        if (ship.locations[0].substring(1) === ship.locations[1].substring(1)) {
-            $(firstCellID).html('<img class="shipsImgOnSelfGridVer" src="img/' + ship.type + 'ver.png">');
+        firstCellID = "#p1_"+ ship.shipLocations[0]
+        if (ship.shipLocations[0].substring(1) === ship.shipLocations[1].substring(1)) {
+            $(firstCellID).html('<img class="shipsImgOnSelfGridVer" src="img/' + ship.shipType + 'ver.png">');
                 } else {
-            $(firstCellID).html('<img class="shipsImgOnSelfGridHor" src="img/' + ship.type + 'hor.png">');
+            $(firstCellID).html('<img class="shipsImgOnSelfGridHor" src="img/' + ship.shipType + 'hor.png">');
         }
         // console.log(ship.type);
-        ship.locations.forEach(function(location) {
+        ship.shipLocations.forEach(function(location) {
             var cellID = "#p1_" + location;
             $(cellID).addClass("shipCell");
        //     console.log(location);
@@ -298,8 +297,7 @@ function postShipLocations(postUrl) {
     console.log(postUrl);
     $.post({
         url: postUrl,
-        //data: shipsJSON,
-        data: JSON.stringify([{shipType: "Destroyer", locations: ["A1", "A2", "A3"]},{shipType: "destroyer", locations: ["A1", "A2", "A3"]}]),
+        data: shipsJSON,
         dataType: "text",
         contentType: "application/json"
     })
@@ -326,8 +324,7 @@ function postShipLocations(postUrl) {
 function postSalvo (postUrl) {
     $.post({
         url: postUrl,
-        //data: salvoJSON,
-        data: JSON.stringify({"salvoLocations": ["A1"], "turn": 3}),
+        data: salvoJSON,
         dataType: "text",
         contentType: "application/json"
     })

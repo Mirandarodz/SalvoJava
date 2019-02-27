@@ -2,6 +2,7 @@ package com.codeoftheweb.salvo;
 
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +31,10 @@ public class GamePlayer {
     //van en plural salvoes y ships, por los datos que se sacan de la lista...luego se definen sus respectivos get y set
     private List<Salvo> salvoes;
 
-    public GamePlayer() { }
+    public GamePlayer() {
+        this.ships = new ArrayList<>();
+        this.salvoes = new ArrayList<>();
+    }
 
     public long getId() { return id; }
 

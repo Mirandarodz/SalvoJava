@@ -122,17 +122,17 @@ public class SalvoController {
     private Map<String, Object> shipDTO(Ship ship) {
         Map<String, Object> dto = new LinkedHashMap<>();
         dto.put("shipType", ship.getShipType());
-        dto.put("shipLocation", ship.getLocations());
+        dto.put("shipLocations", ship.getShipLocations());
         dto.put("player", ship.getGamePlayer().getPlayer().getId());
         return dto;
     }
 
-    private List<Map<String, Object>> makeShipList(List<Ship> ships) {
-        return ships
-                .stream()
-                .map(ship -> shipDTO(ship))
-                .collect(Collectors.toList());
-    }
+   private List<Map<String, Object>> makeShipList(List<Ship> ships) {
+       return ships
+               .stream()
+               .map(ship -> shipDTO(ship))
+               .collect(Collectors.toList());
+   }
 
     private List<Map<String, Object>> getShipList(List<Ship> ships) {
         {
@@ -225,9 +225,9 @@ public class SalvoController {
     private ResponseEntity<Object> gameViewDTO(GamePlayer gamePlayer){
         Map<String, Object> dto = new LinkedHashMap<>();
         GamePlayer self = gamePlayer;
-        GamePlayer opponent = gamePlayer.getGame().getGamePlayers().stream().filter(gp -> gp.getId() != gamePlayer.getId()).findFirst().orElse(null);
+        GamePlayer opponent = gamePlayer.getGame().getGamePlayers().stream().filter(gp -> gp.getId() != gamePlayer.getId()).findFirst().orElse(new GamePlayer());
         dto.put("id", gamePlayer.getGame().getId());
-        dto.put("creationDate", gamePlayer.getGame().getCreationDate().getTime());
+        dto.put("created", gamePlayer.getGame().getCreationDate().getTime());
         dto.put("gamePlayers", getGamePlayersList(gamePlayer.getGame().getGamePlayers()));
         dto.put("ships", getShipList(gamePlayer.getShips()));
         dto.put("salvoes", getSalvoList(gamePlayer.getGame()));
@@ -259,19 +259,19 @@ public class SalvoController {
         gamePlayer.getShips().forEach(ship -> {
             switch (ship.getShipType()) {
                 case "Carrier":
-                    carrierLocation.addAll(ship.getLocations());
+                    carrierLocation.addAll(ship.getShipLocations());
                     break;
                 case "Battleship":
-                    battleshipLocation.addAll(ship.getLocations());
+                    battleshipLocation.addAll(ship.getShipLocations());
                     break;
                 case "Submarine":
-                    submarineLocation.addAll(ship.getLocations());
+                    submarineLocation.addAll(ship.getShipLocations());
                     break;
                 case "Destroyer":
-                    destroyerLocation.addAll(ship.getLocations());
+                    destroyerLocation.addAll(ship.getShipLocations());
                     break;
                 case "Patrol Boat":
-                    patrolboatLocation.addAll(ship.getLocations());    //paso las ubicaciones de gameplayer a las nuevas listas
+                    patrolboatLocation.addAll(ship.getShipLocations());    //paso las ubicaciones de gameplayer a las nuevas listas
                     break;
             }
         });
@@ -499,15 +499,15 @@ public class SalvoController {
         int destroyerDamage = 0;
         for(Ship ship : selfShips){
             if(ship.getShipType().equals("carrier")){
-                carrierLocations.addAll(ship.getLocations());
+                carrierLocations.addAll(ship.getShipLocations());
             }else if(ship.getShipType().equals("battleship")){
-                battleshipLocations.addAll(ship.getLocations());
+                battleshipLocations.addAll(ship.getShipLocations());
             }else if(ship.getShipType().equals("patrolboat")){
-                patrolboatLocations.addAll(ship.getLocations());
+                patrolboatLocations.addAll(ship.getShipLocations());
             }else if(ship.getShipType().equals("submarine")){
-                submarineLocations.addAll(ship.getLocations());
+                submarineLocations.addAll(ship.getShipLocations());
             }else if(ship.getShipType().equals("destroyer")){
-                destroyerLocations.addAll(ship.getLocations());
+                destroyerLocations.addAll(ship.getShipLocations());
             }
         }
         List<String> salvoesLocations = new ArrayList<>();

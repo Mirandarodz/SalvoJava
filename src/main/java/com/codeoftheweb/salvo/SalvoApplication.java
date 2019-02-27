@@ -48,7 +48,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
             ShipRepository shipRepository,
             SalvoRepository salvoRepository,
             ScoreRepository scoreRepository
-    ) {
+) {
         return (args) -> {
 
             // save a couple of players
@@ -66,17 +66,35 @@ public class SalvoApplication extends SpringBootServletInitializer {
             game2.setCreationDate(Date.from(game1.getCreationDate().toInstant().plusSeconds(3600)));
             Game game3 = new Game();
             game3.setCreationDate(Date.from(game2.getCreationDate().toInstant().plusSeconds(3600)));
+            Game game4 = new Game();
+            game4.setCreationDate(Date.from(game3.getCreationDate().toInstant().plusSeconds(3600)));
+            Game game5 = new Game();
+            game5.setCreationDate(Date.from(game4.getCreationDate().toInstant().plusSeconds(3600)));
+            Game game6 = new Game();
+            game6.setCreationDate(Date.from(game5.getCreationDate().toInstant().plusSeconds(3600)));
+            Game game7 = new Game();
+            game7.setCreationDate(Date.from(game6.getCreationDate().toInstant().plusSeconds(3600)));
+            Game game8 = new Game();
+            game8.setCreationDate(Date.from(game7.getCreationDate().toInstant().plusSeconds(3600)));
             gameRepository.save(game1);
             gameRepository.save(game2);
             gameRepository.save(game3);
+            gameRepository.save(game4);
+            gameRepository.save(game5);
+            gameRepository.save(game6);
 
 
             GamePlayer gamePlayer1 = new GamePlayer(game1, player1);
             GamePlayer gamePlayer2 = new GamePlayer(game1, player2);
-            GamePlayer gamePlayer3 = new GamePlayer(game2, player3);
-            GamePlayer gamePlayer4 = new GamePlayer(game2, player4);
+            GamePlayer gamePlayer3 = new GamePlayer(game2, player1);
+            GamePlayer gamePlayer4 = new GamePlayer(game2, player2);
             GamePlayer gamePlayer5 = new GamePlayer(game3, player2);
             GamePlayer gamePlayer6 = new GamePlayer(game3, player4);
+            GamePlayer gamePlayer7 = new GamePlayer(game4, player2);
+            GamePlayer gamePlayer8 = new GamePlayer(game4, player1);
+            GamePlayer gamePlayer9 = new GamePlayer(game5, player4);
+            GamePlayer gamePlayer10 = new GamePlayer(game5, player1);
+            GamePlayer gamePlayer11 = new GamePlayer(game6, player3);
 
             gamePlayerRepository.save(gamePlayer1);
             gamePlayerRepository.save(gamePlayer2);
@@ -84,8 +102,13 @@ public class SalvoApplication extends SpringBootServletInitializer {
             gamePlayerRepository.save(gamePlayer4);
             gamePlayerRepository.save(gamePlayer5);
             gamePlayerRepository.save(gamePlayer6);
+            gamePlayerRepository.save(gamePlayer7);
+            gamePlayerRepository.save(gamePlayer8);
+            gamePlayerRepository.save(gamePlayer9);
+            gamePlayerRepository.save(gamePlayer10);
+            gamePlayerRepository.save(gamePlayer11);
 
-            List<String> ship1Location = new ArrayList<String>();
+           List<String> ship1Location = new ArrayList<String>();
             ship1Location.add("A1");
             ship1Location.add("A2");
             ship1Location.add("A3");
@@ -112,15 +135,15 @@ public class SalvoApplication extends SpringBootServletInitializer {
             Ship4Location.add("F3");
             Ship4Location.add("F4");
 
-            String shipType1 = "Carrier";//length = 5
-            String shipType2 = "Battleship"; //length = 4
-            String shipType3 = "Submarine"; //length = 3
-            String shipType4 = "Destroyer"; //length = 3
-            String shipType5 = "Patrol Boat"; //length = 2
+            String shipType1 = "carrier";//length = 5
+            String shipType2 = "battleship"; //length = 4
+            String shipType3 = "submarine"; //length = 3
+            String shipType4 = "destroyer"; //length = 3
+            String shipType5 = "patrol boat"; //length = 2
 
-            Ship ship2 = new Ship("Submarine", ship2Location, gamePlayer1);
-            Ship ship1 = new Ship("Carrier", ship1Location, gamePlayer1);
-            Ship ship3 = new Ship("Destroyer", ship1Location, gamePlayer2);
+            Ship ship2 = new Ship(shipType3, ship2Location, gamePlayer1);
+            Ship ship1 = new Ship(shipType2, ship1Location, gamePlayer1);
+            Ship ship3 = new Ship(shipType4, ship1Location, gamePlayer2);
             shipRepository.save(ship1);
             shipRepository.save(ship2);
             shipRepository.save(ship3);
@@ -131,8 +154,8 @@ public class SalvoApplication extends SpringBootServletInitializer {
             salvoLocations1.add("F1");
 
             List<String> salvoLocations2 = new ArrayList<>();
-            salvoLocations2.add("B4");
-            salvoLocations2.add("B5");
+            salvoLocations2.add("C4");
+            salvoLocations2.add("C5");
             salvoLocations2.add("B6");
 
             List<String> salvoLocations3 = new ArrayList<>();
@@ -145,7 +168,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
             salvoLocations4.add("A2");
 
             List<String> salvoLocations5 = new ArrayList<>();
-            salvoLocations5.add("A2");
+            salvoLocations5.add("A3");
             salvoLocations5.add("A4");
             salvoLocations5.add("G6");
 
@@ -182,89 +205,89 @@ public class SalvoApplication extends SpringBootServletInitializer {
             scoreRepository.save(score2);
             scoreRepository.save(score3);
             scoreRepository.save(score4);
-
         };
 
     }
 }
 
-@EnableWebSecurity
+            @EnableWebSecurity
 
 
-@Configuration
-class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+            @Configuration
+            class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    /*@Bean
-    @Override
-    public UserDetailsService userDetailsService(){
-       UserDetails user =
-             User.withDefaultPasswordEncoder()
-                   .username("user")
-                   .password("password")
-                   .build();
-       return  new InMemoryUserDetailsManager();
-    }*/
-    @Override
-    protected void configure(HttpSecurity http) throws Exception{
-        //who can see what
-        http.authorizeRequests()
-                .antMatchers("/web/games_3.html").permitAll()
-                .antMatchers("/web/**").permitAll()
-                .antMatchers("/api/games").permitAll()
-                .antMatchers("/api/players").permitAll()
-                .antMatchers("/api/game_view").hasAuthority("user")
-                .antMatchers("/rest/*").denyAll()
-                .anyRequest().permitAll()
+                /*@Bean
+                @Override
+                public UserDetailsService userDetailsService(){
+                   UserDetails user =
+                         User.withDefaultPasswordEncoder()
+                               .username("user")
+                               .password("password")
+                               .build();
+                   return  new InMemoryUserDetailsManager();
+                }*/
+                @Override
+                protected void configure(HttpSecurity http) throws Exception {
+                    //who can see what
+                    http.authorizeRequests()
+                            .antMatchers("/web/games_3.html").permitAll()
+                            .antMatchers("/web/**").permitAll()
+                            .antMatchers("/api/games").permitAll()
+                            .antMatchers("/api/players").permitAll()
+                            .antMatchers("/api/game_view").hasAuthority("user")
+                            .antMatchers("/rest/*").denyAll()
+                            .anyRequest().permitAll()
 
-                .and().formLogin()
-                .usernameParameter("name")
-                .passwordParameter("pwd")
-                .loginPage("/api/login");
+                            .and().formLogin()
+                            .usernameParameter("name")
+                            .passwordParameter("pwd")
+                            .loginPage("/api/login");
 
-        http.logout().logoutUrl("/api/logout");
+                    http.logout().logoutUrl("/api/logout");
 
-        // turn off checking for CSRF tokens
-        http.csrf().disable();
+                    // turn off checking for CSRF tokens
+                    http.csrf().disable();
 
-        // if user is not authenticated, just send an authentication failure response
-        http.exceptionHandling().authenticationEntryPoint((req, res, exc) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED));
+                    // if user is not authenticated, just send an authentication failure response
+                    http.exceptionHandling().authenticationEntryPoint((req, res, exc) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED));
 
-        // if login is successful, just clear the flags asking for authentication
-        http.formLogin().successHandler((req, res, auth) -> clearAuthenticationAttributes(req));
+                    // if login is successful, just clear the flags asking for authentication
+                    http.formLogin().successHandler((req, res, auth) -> clearAuthenticationAttributes(req));
 
-        // if login fails, just send an authentication failure response
-        http.formLogin().failureHandler((req, res, exc) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED));
+                    // if login fails, just send an authentication failure response
+                    http.formLogin().failureHandler((req, res, exc) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED));
 
-        // if logout is successful, just send a success response
-        http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
-    }
-
-    private void clearAuthenticationAttributes(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
-        }
-    }
-
-    @Configuration
-    class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
-
-        @Autowired
-        PasswordEncoder passwordEncoder;
-        @Autowired
-        PlayerRepository playerRepository;
-
-        @Override
-        public void init(AuthenticationManagerBuilder auth) throws Exception {
-            auth.userDetailsService(userName ->  {
-                Player player = playerRepository.findByUserName(userName);
-                if (player != null) {
-                    return new User(player.getUserName(), player.getPassword(),
-                            AuthorityUtils.createAuthorityList("USER"));
-                } else {
-                    throw new UsernameNotFoundException("Unknown user: " + userName);
+                    // if logout is successful, just send a success response
+                    http.logout().logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler());
                 }
-            });
-        }
 
-    }}
+                private void clearAuthenticationAttributes(HttpServletRequest request) {
+                    HttpSession session = request.getSession(false);
+                    if (session != null) {
+                        session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+                    }
+                }
+
+                @Configuration
+                class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdapter {
+
+                    @Autowired
+                    PasswordEncoder passwordEncoder;
+                    @Autowired
+                    PlayerRepository playerRepository;
+
+                    @Override
+                    public void init(AuthenticationManagerBuilder auth) throws Exception {
+                        auth.userDetailsService(userName -> {
+                            Player player = playerRepository.findByUserName(userName);
+                            if (player != null) {
+                                return new User(player.getUserName(), player.getPassword(),
+                                        AuthorityUtils.createAuthorityList("USER"));
+                            } else {
+                                throw new UsernameNotFoundException("Unknown user: " + userName);
+                            }
+                        });
+                    }
+
+                }
+            }
