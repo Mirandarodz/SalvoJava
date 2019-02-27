@@ -175,10 +175,10 @@ function showSelf (gamePlayerData) {
 
     gamePlayerData.gamePlayers.forEach(function(gamePlayer) {
         if (gamePlayer.id == getParameterByName("gp")) {
-            you = gamePlayer.player.email;
+            you = gamePlayer.player.userName;
             youID = gamePlayer.player.id;
         } else {
-            viewer = gamePlayer.player.email;
+            viewer = gamePlayer.player.userName;
             $('#OpponentPlayerName').removeClass('waitingPlayer');
         }
     });
