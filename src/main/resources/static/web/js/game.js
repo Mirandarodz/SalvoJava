@@ -299,7 +299,7 @@ function postShipLocations(postUrl) {
     $.post({
         url: postUrl,
         //data: shipsJSON,
-        data: JSON.stringify([{shipType: "destroyer", locations: ["A1", "A2", "A3"]},{type: "destroyer", locations: ["A1", "A2", "A3"]}]),
+        data: JSON.stringify([{shipType: "Destroyer", locations: ["A1", "A2", "A3"]},{shipType: "destroyer", locations: ["A1", "A2", "A3"]}]),
         dataType: "text",
         contentType: "application/json"
     })
