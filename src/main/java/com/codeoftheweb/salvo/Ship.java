@@ -39,15 +39,11 @@ public class Ship{
         this.id = id;
     }
 
-    public List<String> getShipLocations() {
+    public List<String> getLocations() {
         return locations;
     }
 
     public void setLocations(List<String> locations) {
-        this.locations = locations;
-    }
-
-    public void setShipLocations(List<String> locations) {
         this.locations = locations;
     }
 
