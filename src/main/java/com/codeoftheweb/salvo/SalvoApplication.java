@@ -139,7 +139,7 @@ public class SalvoApplication extends SpringBootServletInitializer {
             String shipType2 = "battleship"; //length = 4
             String shipType3 = "submarine"; //length = 3
             String shipType4 = "destroyer"; //length = 3
-            String shipType5 = "patrol boat"; //length = 2
+            String shipType5 = "patrolboat"; //length = 2
 
             Ship ship2 = new Ship(shipType3, ship2Location, gamePlayer1);
             Ship ship1 = new Ship(shipType2, ship1Location, gamePlayer1);
