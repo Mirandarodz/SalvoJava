@@ -447,7 +447,7 @@ function makeGameRecordTable (hitsArray, gameRecordTableId) {
             }
         }
         if (playTurn.damages.patrolboatHits > 0){
-            hitsReport += "Patrol Boat " + addDamagesIcons(playTurn.damages.patrolboatHits, "hit") + " ";
+            hitsReport += "patrolboat " + addDamagesIcons(playTurn.damages.patrolboatHits, "hit") + " ";
             if (playTurn.damages.patrolboat === 2){
                 hitsReport += "SUNK! ";
                 $(playerTag + 'patrolboatIcon').html('<img src="img/patrolboatsunk.png">');

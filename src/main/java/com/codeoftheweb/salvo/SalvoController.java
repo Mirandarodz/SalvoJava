@@ -270,7 +270,7 @@ public class SalvoController {
                 case "destroyer":
                     destroyerLocation.addAll(ship.getShipLocations());
                     break;
-                case "patrol boat":
+                case "patrolboat":
                     patrolboatLocation.addAll(ship.getShipLocations());    //paso las ubicaciones de gameplayer a las nuevas listas
                     break;
             }
@@ -324,11 +324,11 @@ public class SalvoController {
             damagesPerTurn.put("submarineHits", submarineHitsInTurn);
             damagesPerTurn.put("destroyerHits", destroyerHitsInTurn);
             damagesPerTurn.put("patrolboatHits", patrolboatHitsInTurn);
-            damagesPerTurn.put("Carrier", carrierDamage);
-            damagesPerTurn.put("Battleship", battleshipDamage);
-            damagesPerTurn.put("Submarine", submarineDamage);
-            damagesPerTurn.put("Destroyer", destroyerDamage);
-            damagesPerTurn.put("Patrol Boat", patrolboatDamage);
+            damagesPerTurn.put("carrier", carrierDamage);
+            damagesPerTurn.put("battleship", battleshipDamage);
+            damagesPerTurn.put("submarine", submarineDamage);
+            damagesPerTurn.put("destroyer", destroyerDamage);
+            damagesPerTurn.put("patrolboat", patrolboatDamage);
             hitsMapPerTurn.put("turn", salvo.getTurn());
             hitsMapPerTurn.put("hitLocations", hitCellsList);
             hitsMapPerTurn.put("damages", damagesPerTurn);
