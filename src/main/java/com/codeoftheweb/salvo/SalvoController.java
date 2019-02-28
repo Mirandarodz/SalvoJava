@@ -257,20 +257,20 @@ public class SalvoController {
         List <String> destroyerLocation = new ArrayList<>();
         List <String> patrolboatLocation = new ArrayList<>(); //creo una nueva lista con las ubicaciones de cada barco
         gamePlayer.getShips().forEach(ship -> {
-            switch (ship.getShipType()) {
-                case "Carrier":
+            switch (ship.getShipType().toLowerCase()) {
+                case "carrier":
                     carrierLocation.addAll(ship.getShipLocations());
                     break;
-                case "Battleship":
+                case "battleship":
                     battleshipLocation.addAll(ship.getShipLocations());
                     break;
-                case "Submarine":
+                case "submarine":
                     submarineLocation.addAll(ship.getShipLocations());
                     break;
-                case "Destroyer":
+                case "destroyer":
                     destroyerLocation.addAll(ship.getShipLocations());
                     break;
-                case "Patrol Boat":
+                case "patrol boat":
                     patrolboatLocation.addAll(ship.getShipLocations());    //paso las ubicaciones de gameplayer a las nuevas listas
                     break;
             }
@@ -423,6 +423,9 @@ public class SalvoController {
         if (player == null) {return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);}
 
         if (player.getId() != gamePlayer.getPlayer().getId()) {return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);}
+
+        salvo.setGamePlayer(gamePlayer);
+        salvo.setTurn(gamePlayer.getLastTurn() + 1);
 
         if (gamePlayer.isTurnLoaded(salvo.getTurn())) {return new ResponseEntity<>(HttpStatus.FORBIDDEN);}
 

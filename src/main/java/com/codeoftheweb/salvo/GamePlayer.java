@@ -91,4 +91,14 @@ public class GamePlayer {
         Salvo salvo = this.getSalvoes().stream().filter(s -> s.getTurn()==turn).findFirst().orElse(null);
         return salvo != null;
     }
+
+    public int getLastTurn(){
+        int lastTurn = 0;
+        for(Salvo salvo : getSalvoes()) {
+            if (salvo.getTurn()>lastTurn){
+                lastTurn = salvo.getTurn();
+            }
+        }
+        return lastTurn;
+    }
 }
